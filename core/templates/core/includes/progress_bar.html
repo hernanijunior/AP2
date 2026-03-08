@@ -1,0 +1,4 @@
+<!-- === core/templates/core/includes/progress_bar.html === -->
+{% if width %}
+<div class="progress-bar bg-primary" role="progressbar" {% if '0' in width %}style="width:0%"{% elif '14' in width %}style="width: 14%"{% elif '28' in width %}style="width: 28%"{% elif '42' in width %}style="width: 42%"{% elif '56' in width %}style="width: 56%"{% elif '70' in width %}style="width: 70%"{% elif '85' in width %}style="width: 85%"{% elif '100' in width %}style="width: 100%"{% else %}style="width: 0%"{% endif %}></div>
+{% endif %}

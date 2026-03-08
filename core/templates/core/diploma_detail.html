@@ -16,25 +16,33 @@
     <div class="card-body">
         <h5 class="text-primary mb-4">Fluxo do Diploma Digital</h5>
         <div class="d-flex justify-content-between position-relative text-center">
-
             <div class="progress position-absolute" style="top: 15px; left: 5%; right: 5%; height: 3px; z-index: 1;">
-                <div class="progress-bar bg-primary" role="progressbar" style="width: 
-                    {% if diploma.status == 'Rascunho' %}0%
-                    {% elif diploma.status == 'Aguardando Coordenador' %}14%
-                    {% elif diploma.status == 'Aguardando PROPG' %}28%
-                    {% elif diploma.status == 'Aprovado PROPG' %}42%
-                    {% elif diploma.status == 'XML Gerado' %}56%
-                    {% elif diploma.status == 'Assinado (Simulado)' %}70%
-                    {% elif diploma.status == 'Registrado' %}85%
-                    {% elif diploma.status == 'Emitido' %}100%
-                    {% endif %};">
-                </div>
+                {% if diploma.status == 'Rascunho' %}
+                    {% include 'core/includes/progress_bar.html' with width='0%' %}
+                {% elif diploma.status == 'Aguardando Coordenador' %}
+                    {% include 'core/includes/progress_bar.html' with width='14%' %}
+                {% elif diploma.status == 'Aguardando PROPG' %}
+                    {% include 'core/includes/progress_bar.html' with width='28%' %}
+                {% elif diploma.status == 'Aprovado PROPG' %}
+                    {% include 'core/includes/progress_bar.html' with width='42%' %}
+                {% elif diploma.status == 'XML Gerado' %}
+                    {% include 'core/includes/progress_bar.html' with width='56%' %}
+                {% elif diploma.status == 'Assinado (Simulado)' %}
+                    {% include 'core/includes/progress_bar.html' with width='70%' %}
+                {% elif diploma.status == 'Registrado' %}
+                    {% include 'core/includes/progress_bar.html' with width='85%' %}
+                {% elif diploma.status == 'Emitido' %}
+                    {% include 'core/includes/progress_bar.html' with width='100%' %}
+                {% else %}
+                    {% include 'core/includes/progress_bar.html' with width='0%' %}
+                {% endif %}
             </div>
 
             {% for st in diploma.STATUS_CHOICES %}
+            {% if diploma.status == st.0 or diploma.status == 'Emitido' or diploma.id %}
             <div style="z-index: 2; width: 120px; display: flex; flex-direction: column; align-items: center;">
                 <div class="rounded-circle d-flex align-items-center justify-content-center border"
-                    style="width: 32px; height: 32px; background-color: {% if diploma.status == st.0 or diploma.status == 'Emitido' or diploma.id %}var(--primary){% else %}#e9ecef{% endif %}; color: {% if diploma.status == st.0 or diploma.status == 'Emitido' or diploma.id %}#fff{% else %}#6c757d{% endif %}; border-color: {% if diploma.status == st.0 or diploma.status == 'Emitido' or diploma.id %}var(--primary) !important{% else %}#dee2e6{% endif %};">
+                    style="width: 32px; height: 32px; background-color: var(--primary); color: #fff; border-color: var(--primary) !important;">
                     <i class="bi bi-check"></i>
                 </div>
                 <div class="small mt-2 {% if diploma.status == st.0 %}fw-bold text-primary{% else %}text-muted{% endif %} px-2"
@@ -42,6 +50,18 @@
                     {{ st.1 }}
                 </div>
             </div>
+            {% else %}
+            <div style="z-index: 2; width: 120px; display: flex; flex-direction: column; align-items: center;">
+                <div class="rounded-circle d-flex align-items-center justify-content-center border"
+                    style="width: 32px; height: 32px; background-color: #e9ecef; color: #6c757d; border-color: #dee2e6;">
+                    <i class="bi bi-check"></i>
+                </div>
+                <div class="small mt-2 {% if diploma.status == st.0 %}fw-bold text-primary{% else %}text-muted{% endif %} px-2"
+                    style="line-height: 1.1; font-size: 0.75rem;">
+                    {{ st.1 }}
+                </div>
+            </div>
+            {% endif %}
             {% endfor %}
             <!-- The timeline above is slightly incorrect logically (it checks if status == st.0, but I should use the index for accurate progress visually). Let's adjust to simplistic visual using simple inline CSS. -->
         </div>
@@ -100,8 +120,7 @@
                             <div class="col-md-4">
                                 URL Validação:<br>
                                 {% if diploma.url_diploma %}
-                                <a href="{{ diploma.url_diploma }}" target="_blank" class="small">{{ diploma.url_diploma
-                                    }}</a>
+                                <a href="{{ diploma.url_diploma }}" target="_blank" class="small">{{ diploma.url_diploma }}</a>
                                 {% else %}
                                 <strong>Não atribuída</strong>
                                 {% endif %}
@@ -173,8 +192,7 @@
                     <li class="list-group-item py-2 px-3">
                         <div class="d-flex w-100 justify-content-between">
                             <span class="fw-bold text-primary">{{ log.papel }}</span>
-                            <span class="text-muted" style="font-size: 0.75rem;">{{ log.timestamp|date:"d/m H:i"
-                                }}</span>
+                            <span class="text-muted" style="font-size: 0.75rem;">{{ log.timestamp|date:"d/m H:i" }}</span>
                         </div>
                         <p class="mb-0 text-muted">{{ log.observacao }}</p>
                         <small class="text-secondary">por {{ log.nome_assinante }}</small>
