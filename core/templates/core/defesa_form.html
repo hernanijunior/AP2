@@ -1,0 +1,80 @@
+<!-- === core/templates/core/defesa_form.html === -->
+{% extends 'core/base.html' %}
+
+{% block title %}Lançar Defesa | Diploma Digital{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'defesa_list' %}">Defesas</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Lançar Defesa</li>
+    </ol>
+</nav>
+
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i> Ao lançar uma defesa, um processo de emissão de <strong>Diploma em
+        Rascunho</strong> será gerado automaticamente.
+</div>
+
+<div class="card card-suap">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-journal-check"></i> Dados da Defesa</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label class="form-label text-muted fw-bold">Aluno(a) Habilitado(a)</label>
+                    <select name="aluno" class="form-select" required>
+                        <option value="">Selecione um aluno sem defesa registrada...</option>
+                        {% for a in alunos %}
+                        <option value="{{ a.id }}">{{ a.matricula }} - {{ a.nome_civil }} ({{ a.programa.sigla }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label class="form-label text-muted fw-bold">Título da Dissertação/Tese</label>
+                    <input type="text" name="titulo" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold">Data da Defesa</label>
+                    <input type="date" name="data_defesa" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold">Data de Conclusão (Ata)</label>
+                    <input type="date" name="data_conclusao" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-muted fw-bold">Carga Horária (h)</label>
+                    <input type="number" name="carga_horaria_total" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-muted fw-bold">Co-orientador(a) (Opcional)</label>
+                    <input type="text" name="coorientador_nome" class="form-control">
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <label class="form-label text-muted fw-bold">Resumo</label>
+                    <textarea name="resumo" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'defesa_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check2"></i> Lançar Defesa e Criar
+                    Processo</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

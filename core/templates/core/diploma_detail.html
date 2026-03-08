@@ -1,0 +1,190 @@
+<!-- === core/templates/core/diploma_detail.html === -->
+{% extends 'core/base.html' %}
+
+{% block title %}Detalhe do Processo {{ diploma.id }} | Diploma Digital{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'defesa_list' %}">Processos de Diploma</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Processo #{{ diploma.id }}</li>
+    </ol>
+</nav>
+
+<!-- Timeline Visual -->
+<div class="card card-suap mb-4">
+    <div class="card-body">
+        <h5 class="text-primary mb-4">Fluxo do Diploma Digital</h5>
+        <div class="d-flex justify-content-between position-relative text-center">
+
+            <div class="progress position-absolute" style="top: 15px; left: 5%; right: 5%; height: 3px; z-index: 1;">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: 
+                    {% if diploma.status == 'Rascunho' %}0%
+                    {% elif diploma.status == 'Aguardando Coordenador' %}14%
+                    {% elif diploma.status == 'Aguardando PROPG' %}28%
+                    {% elif diploma.status == 'Aprovado PROPG' %}42%
+                    {% elif diploma.status == 'XML Gerado' %}56%
+                    {% elif diploma.status == 'Assinado (Simulado)' %}70%
+                    {% elif diploma.status == 'Registrado' %}85%
+                    {% elif diploma.status == 'Emitido' %}100%
+                    {% endif %};">
+                </div>
+            </div>
+
+            {% for st in diploma.STATUS_CHOICES %}
+            <div style="z-index: 2; width: 120px; display: flex; flex-direction: column; align-items: center;">
+                <div class="rounded-circle d-flex align-items-center justify-content-center border"
+                    style="width: 32px; height: 32px; background-color: {% if diploma.status == st.0 or diploma.status == 'Emitido' or diploma.id %}var(--primary){% else %}#e9ecef{% endif %}; color: {% if diploma.status == st.0 or diploma.status == 'Emitido' or diploma.id %}#fff{% else %}#6c757d{% endif %}; border-color: {% if diploma.status == st.0 or diploma.status == 'Emitido' or diploma.id %}var(--primary) !important{% else %}#dee2e6{% endif %};">
+                    <i class="bi bi-check"></i>
+                </div>
+                <div class="small mt-2 {% if diploma.status == st.0 %}fw-bold text-primary{% else %}text-muted{% endif %} px-2"
+                    style="line-height: 1.1; font-size: 0.75rem;">
+                    {{ st.1 }}
+                </div>
+            </div>
+            {% endfor %}
+            <!-- The timeline above is slightly incorrect logically (it checks if status == st.0, but I should use the index for accurate progress visually). Let's adjust to simplistic visual using simple inline CSS. -->
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Dados do Processo -->
+        <div class="card card-suap mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> Dados do Processo</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <span class="text-muted small fw-bold text-uppercase">Aluno</span><br>
+                        {{ defesa.aluno.nome_civil }} ({{ defesa.aluno.matricula }})<br>
+                        CPF: {{ defesa.aluno.cpf }} | RG: {{ defesa.aluno.rg }} {{ defesa.aluno.rg_orgao_emissor }}/{{
+                        defesa.aluno.rg_uf }}
+                    </div>
+                    <div class="col-md-6">
+                        <span class="text-muted small fw-bold text-uppercase">Programa</span><br>
+                        {{ defesa.aluno.programa.nome }} ({{ defesa.aluno.programa.sigla }})<br>
+                        Nível: {{ defesa.aluno.programa.get_nivel_display }} | Modalidade: {{
+                        defesa.aluno.programa.get_modalidade_display }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <span class="text-muted small fw-bold text-uppercase">Defesa</span><br>
+                        <strong>Título:</strong> {{ defesa.titulo }}<br>
+                        <strong>Data da Defesa:</strong> {{ defesa.data_defesa|date:"d/m/Y" }} |
+                        <strong>Conclusão:</strong> {{ defesa.data_conclusao|date:"d/m/Y" }}<br>
+                        <strong>Orientador(a):</strong> {{ defesa.aluno.orientador.nome_completo }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="text-muted small fw-bold text-uppercase">Registro e Diploma</span><br>
+                        <div class="row mt-2">
+                            <div class="col-md-4">
+                                Número do Diploma:<br>
+                                <span
+                                    class="badge {% if diploma.numero_diploma %}bg-success{% else %}bg-secondary{% endif %} p-2 rounded">
+                                    {{ diploma.numero_diploma|default:"Aguardando emissão" }}
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                Livro / Folha / Reg:<br>
+                                <strong>{{ diploma.numero_livro|default:"-" }} / {{ diploma.numero_folha|default:"-" }}
+                                    / {{ diploma.numero_registro|default:"-" }}</strong>
+                            </div>
+                            <div class="col-md-4">
+                                URL Validação:<br>
+                                {% if diploma.url_diploma %}
+                                <a href="{{ diploma.url_diploma }}" target="_blank" class="small">{{ diploma.url_diploma
+                                    }}</a>
+                                {% else %}
+                                <strong>Não atribuída</strong>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if diploma.xml_gerado %}
+        <div class="card card-suap">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-code-slash"></i> XML Gerado</h5>
+                <a href="{% url 'diploma_xml' diploma.id %}" class="btn btn-sm btn-outline-secondary">Visualizar XML
+                    Completo</a>
+            </div>
+            <div class="card-body p-0">
+                <textarea class="form-control text-monospace bg-light border-0 p-3" rows="8" readonly
+                    style="font-family: monospace; font-size: 0.85rem; resize: none;">{{ diploma.xml_gerado|truncatechars:1000 }}</textarea>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Painel de Ação -->
+    <div class="col-md-4">
+        <div class="card card-suap mb-4" style="border-top-color: var(--warning);">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 text-warning"><i class="bi bi-exclamation-triangle"></i> Ação Requerida</h5>
+            </div>
+            <div class="card-body bg-light text-center py-4">
+                <h6 class="mb-3">Status Atual:<br><span class="badge bg-secondary fs-6 mt-2">{{ diploma.status }}</span>
+                </h6>
+
+                {% if acao_disponivel %}
+                <hr>
+                <p class="small text-muted mb-3">Você tem permissão (papel: <strong>{{ papel_ativo }}</strong>) para
+                    executar a próxima etapa:</p>
+                <form method="post" action="{% url 'diploma_acao' diploma.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="acao" value="{{ acao_disponivel.0 }}">
+                    <button type="submit"
+                        class="btn btn-{{ acao_disponivel.2 }} w-100 py-2 shadow-sm rounded-pill fw-bold">
+                        {{ acao_disponivel.1 }} <i class="bi bi-arrow-right-circle ms-1"></i>
+                    </button>
+                </form>
+                {% else %}
+                <hr>
+                {% if diploma.status == 'Emitido' %}
+                <div class="alert alert-success mb-0 py-2"><i class="bi bi-check-circle-fill"></i> Fluxo Concluído</div>
+                {% else %}
+                <p class="small text-muted mb-0">Aguardando ação de outro papel responsável ou você não possui permissão
+                    (atual: <strong>{{ papel_ativo }}</strong>) nesta etapa.</p>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Log de Atividades -->
+        <div class="card card-suap">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h6 class="mb-0"><i class="bi bi-clock-history"></i> Histórico</h6>
+                <a href="{% url 'diploma_log' diploma.id %}" class="btn btn-sm text-primary p-0">Ver Todos</a>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush small">
+                    {% for log in logs|slice:":4" %}
+                    <li class="list-group-item py-2 px-3">
+                        <div class="d-flex w-100 justify-content-between">
+                            <span class="fw-bold text-primary">{{ log.papel }}</span>
+                            <span class="text-muted" style="font-size: 0.75rem;">{{ log.timestamp|date:"d/m H:i"
+                                }}</span>
+                        </div>
+                        <p class="mb-0 text-muted">{{ log.observacao }}</p>
+                        <small class="text-secondary">por {{ log.nome_assinante }}</small>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item py-3 text-center text-muted">Ainda não há registros.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

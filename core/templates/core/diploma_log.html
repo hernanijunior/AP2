@@ -1,0 +1,54 @@
+<!-- === core/templates/core/diploma_log.html === -->
+{% extends 'core/base.html' %}
+
+{% block title %}Histórico Completo #{{ diploma.id }} | Diploma Digital{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'defesa_list' %}">Processos</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'diploma_detail' diploma.defesa.id %}">Processo #{{ diploma.id
+                }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Histórico</li>
+    </ol>
+</nav>
+
+<div class="card card-suap">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-list-ol"></i> Histórico de Eventos do Processo</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-suap table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>Papel do Usuário</th>
+                        <th>Usuário Autenticado</th>
+                        <th>IP</th>
+                        <th>Ação Executada / Observação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.timestamp|date:"d/m/Y H:i:s" }}</td>
+                        <td><span class="badge border text-dark">{{ log.papel }}</span></td>
+                        <td>{{ log.nome_assinante }}</td>
+                        <td><span class="text-muted small">{{ log.ip }}</span></td>
+                        <td>{{ log.observacao }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">Nenhum evento registrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer bg-white text-end">
+        <a href="{% url 'diploma_detail' diploma.defesa.id %}" class="btn btn-outline-secondary">Voltar ao Processo</a>
+    </div>
+</div>
+{% endblock %}

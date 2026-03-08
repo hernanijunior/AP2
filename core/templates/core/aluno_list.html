@@ -1,0 +1,47 @@
+<!-- === core/templates/core/aluno_list.html === -->
+{% extends 'core/base.html' %}
+
+{% block title %}Alunos | Diploma Digital{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-people text-muted"></i> Alunos</h2>
+    <a href="{% url 'aluno_create' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Novo Aluno</a>
+</div>
+
+<div class="card card-suap">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-suap table-striped table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Matrícula</th>
+                        <th>Nome Civil</th>
+                        <th>CPF</th>
+                        <th>Programa</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aluno in alunos %}
+                    <tr>
+                        <td>{{ aluno.matricula }}</td>
+                        <td>{{ aluno.nome_civil }}</td>
+                        <td>{{ aluno.cpf }}</td>
+                        <td>{{ aluno.programa.sigla }}</td>
+                        <td>
+                            <a href="{% url 'aluno_update' aluno.id %}" class="btn btn-sm btn-outline-primary py-0"><i
+                                    class="bi bi-pencil"></i> Editar</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">Nenhum aluno cadastrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

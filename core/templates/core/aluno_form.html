@@ -1,0 +1,143 @@
+<!-- === core/templates/core/aluno_form.html === -->
+{% extends 'core/base.html' %}
+
+{% block title %}{% if aluno %}Editar{% else %}Novo{% endif %} Aluno | Diploma Digital{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'aluno_list' %}">Alunos</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% if aluno %}Editar{% else %}Novo{% endif %}</li>
+    </ol>
+</nav>
+
+<div class="card card-suap">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-person-badge"></i> Dados do Aluno</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold">Matrícula</label>
+                    <input type="text" name="matricula" class="form-control"
+                        value="{{ form.matricula.value|default_if_none:'' }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-muted fw-bold">Nome Civil</label>
+                    <input type="text" name="nome_civil" class="form-control"
+                        value="{{ form.nome_civil.value|default_if_none:'' }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold">CPF</label>
+                    <input type="text" name="cpf" class="form-control" value="{{ form.cpf.value|default_if_none:'' }}"
+                        required>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold">Data de Nascimento</label>
+                    <input type="date" name="data_nascimento" class="form-control"
+                        value="{{ form.data_nascimento.value|date:'Y-m-d'|default_if_none:'' }}" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-muted fw-bold">Sexo</label>
+                    <select name="sexo" id="id_sexo" class="form-select" required>
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                        <option value="O">Outro</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-muted fw-bold">E-mail</label>
+                    <input type="email" name="email" class="form-control"
+                        value="{{ form.email.value|default_if_none:'' }}" required>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label text-muted fw-bold">Nacionalidade</label>
+                    <input type="text" name="nacionalidade" class="form-control"
+                        value="{{ form.nacionalidade.value|default_if_none:'Brasileira' }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-muted fw-bold">Naturalidade (Município)</label>
+                    <input type="text" name="naturalidade_municipio" class="form-control"
+                        value="{{ form.naturalidade_municipio.value|default_if_none:'' }}" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-muted fw-bold">UF Nato</label>
+                    <input type="text" name="naturalidade_uf" class="form-control"
+                        value="{{ form.naturalidade_uf.value|default_if_none:'' }}" maxlength="2" required>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold">RG</label>
+                    <input type="text" name="rg" class="form-control" value="{{ form.rg.value|default_if_none:'' }}"
+                        required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold">Órgão Emissor</label>
+                    <input type="text" name="rg_orgao_emissor" class="form-control"
+                        value="{{ form.rg_orgao_emissor.value|default_if_none:'' }}" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-muted fw-bold">UF RG</label>
+                    <input type="text" name="rg_uf" class="form-control"
+                        value="{{ form.rg_uf.value|default_if_none:'' }}" maxlength="2" required>
+                </div>
+            </div>
+
+            <h6 class="border-bottom pb-2 mb-3 text-primary">Vínculo Acadêmico</h6>
+
+            <div class="row mb-4">
+                <div class="col-md-5">
+                    <label class="form-label text-muted fw-bold">Programa</label>
+                    <select name="programa" id="id_programa" class="form-select" required>
+                        <option value="">Selecione...</option>
+                        {% for p in programas %}
+                        <option value="{{ p.id }}">{{ p.sigla }} - {{ p.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label text-muted fw-bold">Orientador(a)</label>
+                    <select name="orientador" id="id_orientador" class="form-select" required>
+                        <option value="">Selecione...</option>
+                        {% for o in orientadores %}
+                        <option value="{{ o.id }}">{{ o.nome_completo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        var sexoAtivo = "{{ form.sexo.value|default_if_none:'' }}";
+                        var progAtivo = "{{ form.programa.value|default_if_none:'' }}";
+                        var orientAtivo = "{{ form.orientador.value|default_if_none:'' }}";
+
+                        if (sexoAtivo) document.getElementById("id_sexo").value = sexoAtivo;
+                        if (progAtivo) document.getElementById("id_programa").value = progAtivo;
+                        if (orientAtivo) document.getElementById("id_orientador").value = orientAtivo;
+                    });
+                </script>
+                <div class="col-md-2">
+                    <label class="form-label text-muted fw-bold">Data Ingresso</label>
+                    <input type="date" name="data_ingresso" class="form-control"
+                        value="{{ form.data_ingresso.value|date:'Y-m-d'|default_if_none:'' }}" required>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'aluno_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-success"><i class="bi bi-check2"></i> Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

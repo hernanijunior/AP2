@@ -1,0 +1,63 @@
+<!-- === core/templates/core/defesa_list.html === -->
+{% extends 'core/base.html' %}
+
+{% block title %}Defesas e Diplomas | Diploma Digital{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-journal-check text-muted"></i> Defesas e Diplomas</h2>
+    <a href="{% url 'defesa_create' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Lançar Defesa / Criar
+        Diploma</a>
+</div>
+
+<div class="card card-suap">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-suap table-striped table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Data Defesa</th>
+                        <th>Aluno</th>
+                        <th>Programa</th>
+                        <th>Status do Diploma</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in defesas %}
+                    <tr>
+                        <td>{{ d.data_defesa|date:"d/m/Y" }}</td>
+                        <td>{{ d.aluno.nome_civil }}</td>
+                        <td>{{ d.aluno.programa.sigla }}</td>
+                        <td>
+                            {% with status=d.diploma.status %}
+                            <span class="badge border text-dark" style="
+                                {% if status == 'Rascunho' %}border-color: var(--text) !important;
+                                {% elif status == 'Aguardando Coordenador' %}background-color: var(--warning); color: #fff !important;
+                                {% elif status == 'Aguardando PROPG' %}background-color: var(--accent); color: #fff !important;
+                                {% elif status == 'Aprovado PROPG' %}background-color: var(--primary); color: #fff !important;
+                                {% elif status == 'XML Gerado' %}background-color: var(--warning); color: #fff !important;
+                                {% elif status == 'Assinado (Simulado)' %}background-color: var(--danger); color: #fff !important;
+                                {% elif status == 'Registrado' %}background-color: var(--info); color: #fff !important;
+                                {% elif status == 'Emitido' %}background-color: var(--success); color: #fff !important;
+                                {% endif %}">
+                                {{ status }}
+                            </span>
+                            {% endwith %}
+                        </td>
+                        <td>
+                            <a href="{% url 'diploma_detail' d.id %}" class="btn btn-sm btn-outline-primary py-0"><i
+                                    class="bi bi-search"></i> Acompanhar Fluxo</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">Nenhuma defesa lançada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
